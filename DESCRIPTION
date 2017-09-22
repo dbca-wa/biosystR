@@ -17,13 +17,15 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
+    dplyr,
     httr,
     kimisc,
     magrittr,
     purrr,
-    tibble,
-    dplyr
-Suggests: testthat,
+    tibble
+Suggests: 
+    DT,
     knitr,
-    DT
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr

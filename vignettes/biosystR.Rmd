@@ -44,87 +44,79 @@ using single sign on (needs active browser window)
 * All heavy lifting is factored out into helper functions.
 
 ```{r helpers}
-#' Make map_dbl resilient against NULL
-map_dbl_hack <- function(.x, .f, ...) {
-    . <- ""
-    purrr::map(.x, .f, ...) %>%
-        purrr::map_if(is.null, ~ NA_real_) %>%
-        purrr::flatten_dbl(.)
-}
-
-
-#' Basic Biosys API GET returning HTTP response content
-biosys_get <- function(api_path,
-  api="https://biosys.dbca.wa.gov.au/api/",
-  auth=httr::authenticate(Sys.getenv("BIOSYS_UN"), 
-                          Sys.getenv("BIOSYS_PW")),
-  query = list()){
-  httr::GET(file.path(api, api_path), auth, query = query) %>% 
-    httr::content(.)
-} 
-
-
 #' Parse BioSys projects to tibble
 biosys_projects <- function(
-  auth=httr::authenticate(
-    Sys.getenv("BIOSYS_UN"), Sys.getenv("BIOSYS_PW"))){
-  biosys_get("projects", auth = auth) %>% {
-    tibble::tibble(
-      id = purrr::map_chr(., "id"),
-      name = purrr::map_chr(., "name"),
-      code = purrr::map_chr(., "code"),
-      description = map_chr_hack(., "description"),
-      site_count = purrr::map_int(., "site_count"),
-      dataset_count = purrr::map_int(., "dataset_count"),
-      record_count = purrr::map_int(., "record_count"),
-      longitude = purrr::map(., c("centroid", "coordinates")) %>% 
-        map_dbl_hack(magrittr::extract2, 1),
-      latitude = purrr::map(., c("centroid", "coordinates")) %>% 
-        map_dbl_hack(magrittr::extract2, 2),
-      datum = purrr::map_chr(., "datum"),
-      timezone = purrr::map_chr(., "timezone")
-      # site_data_package
-      # custodians
-    )
-  }
+    un=Sys.getenv("BIOSYS_UN"), 
+    pw=Sys.getenv("BIOSYS_PW")){
+    
+    biosys_get(
+        "projects", 
+        un = un, 
+        pw = pw)$content %>% {
+            tibble::tibble(
+                id = purrr::map_chr(., "id"),
+                name = purrr::map_chr(., "name"),
+                code = purrr::map_chr(., "code"),
+                description = map_chr_hack(., "description"),
+                site_count = purrr::map_int(., "site_count"),
+                dataset_count = purrr::map_int(., "dataset_count"),
+                record_count = purrr::map_int(., "record_count"),
+                longitude = purrr::map(., c("centroid", "coordinates")) %>% 
+                    map_dbl_hack(magrittr::extract2, 1),
+                latitude = purrr::map(., c("centroid", "coordinates")) %>% 
+                    map_dbl_hack(magrittr::extract2, 2),
+                datum = purrr::map_chr(., "datum"),
+                timezone = purrr::map_chr(., "timezone")
+                # site_data_package
+                # custodians
+            )
+        }
 }
 
 
 #' Parse BioSys datasets to tibble
 biosys_datasets <- function(
-  auth=httr::authenticate(
-    Sys.getenv("BIOSYS_UN"), Sys.getenv("BIOSYS_PW")),
-  project_id = NULL){
-  if (!is.null(project_id)) {
-    query = list("project" = project_id)
-  } else {
-      query = list()
-  }
-  biosys_get("datasets", auth = auth, query = query) %>% {
-    tibble::tibble(
-      id = purrr::map_chr(., "id"),
-      record_count = purrr::map_int(., "record_count"),
-      data_package = purrr::map(., "data_package"),
-      name = purrr::map_chr(., "name"),
-      type = purrr::map_chr(., "type"),
-      description = map_chr_hack(., "description"),
-      project_id = purrr::map_int(., "project")
-    )
-  }
+    un=Sys.getenv("BIOSYS_UN"), 
+    pw=Sys.getenv("BIOSYS_PW"),
+    project_id = NULL){
+    
+    if (!is.null(project_id)) {
+        query = list("project" = project_id)
+    } else {
+        query = list()
+    }
+    
+    biosys_get(
+        "datasets", 
+        un = un, 
+        pw = pw, 
+        query = query)$content %>% {   
+            tibble::tibble(
+                id = purrr::map_chr(., "id"),
+                record_count = purrr::map_int(., "record_count"),
+                data_package = purrr::map(., "data_package"),
+                name = purrr::map_chr(., "name"),
+                type = purrr::map_chr(., "type"),
+                description = map_chr_hack(., "description"),
+                project_id = purrr::map_int(., "project")
+            )
+        }
 }
 
 
 #' Parse BioSys records to tibble
 biosys_records <- function(
-  auth=httr::authenticate(Sys.getenv("BIOSYS_UN"),
-                          Sys.getenv("BIOSYS_PW")),
-  project_id = NULL){
+    un=Sys.getenv("BIOSYS_UN"),
+    pw=Sys.getenv("BIOSYS_PW"),
+    project_id = NULL){
+    
   if (!is.null(project_id)) {
     query = list("dataset__project__id" = project_id)
   } else {
       query = list()
   }
-  biosys_json <- biosys_get("records", auth = auth, query = query)
+  biosys_json <- biosys_get(
+      "records", un = un, pw = pw, query = query)$content
   
   biosys_records <- biosys_json %>% {
    tibble::tibble(
