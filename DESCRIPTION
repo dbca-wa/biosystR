@@ -1,11 +1,29 @@
 Package: biosystR
 Type: Package
-Title: What the Package Does (Title Case)
+Title: BioSys API Wrapper
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: person(c("Florian", "W."), "Mayer", 
+    email="Florian.Mayer@dbca.wa.gov.au", role=c("aut", "cre"))
+Author: Florian W. Mayer [aut, cre]
+Description:
+    The biological survey data warehouse 'BioSys' is a 'Django' web app with a 
+    'RESTful' 'API' returning 'JSON'.
+    'biosystR' provides helpers to retrieve data from the 'API', and to turn the 
+    received 'JSON' into R 'tibbles'. 'biosystR' will grow alongside 
+    implemented use cases of retrieving and analysing 'BioSys' data.
+URL: https://github.com/parksandwildlife/biosystr
+BugReports: https://github.com/parksandwildlife/biosystr/issues
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Imports:
+    httr,
+    kimisc,
+    magrittr,
+    purrr,
+    tibble,
+    dplyr
+Suggests: testthat,
+    knitr,
+    DT
+VignetteBuilder: knitr
