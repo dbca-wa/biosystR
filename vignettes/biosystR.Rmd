@@ -44,19 +44,12 @@ using single sign on (needs active browser window)
 * All heavy lifting is factored out into helper functions.
 
 ```{r helpers}
-#' Make map_chr resilient against NULL
-map_chr_hack <- function(.x, .f, ...) {
-  purrr::map(.x, .f, ...) %>%
-    purrr::map_if(is.null, ~ NA_character_) %>%
-    purrr::flatten_chr()
-}
-
-
 #' Make map_dbl resilient against NULL
 map_dbl_hack <- function(.x, .f, ...) {
-  purrr::map(.x, .f, ...) %>%
-    purrr::map_if(is.null, ~ NA_real_) %>%
-    purrr::flatten_dbl()
+    . <- ""
+    purrr::map(.x, .f, ...) %>%
+        purrr::map_if(is.null, ~ NA_real_) %>%
+        purrr::flatten_dbl(.)
 }
 
 

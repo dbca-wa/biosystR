@@ -1,5 +1,5 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Travis-CI Build Status](https://travis-ci.org/parksandwildlife/biosystR.png?branch=master)](https://travis-ci.org/parksandwildlife/biosystR)
+[![Travis-CI Build Status](https://travis-ci.org/parksandwildlife/biosystR.png?branch=master)](https://travis-ci.org/parksandwildlife/biosystR) [![Coverage Status](https://coveralls.io/repos/github/parksandwildlife/biosystR/badge.svg?branch=master)](https://coveralls.io/github/parksandwildlife/biosystR?branch=master)
 
 biosystR makes BioSys data accessible in R
 ==========================================
